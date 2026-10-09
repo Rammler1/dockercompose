@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS Build
 WORKDIR /src
 COPY ["src/DockerComposeApi/DockerComposeApi.csproj", "DockerComposeApi/"]
-RUN dotnet restore src/DockerComposeApi/DockerComposeApi.csproj
+RUN dotnet restore DockerComposeApi/DockerComposeApi.csproj
 
 COPY . /src
 RUN dotnet publish src/DockerComposeApi/DockerComposeApi.csproj -c Release -o /app/publish
