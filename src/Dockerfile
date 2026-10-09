@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS Build
 WORKDIR /src
-COPY ["DockerComposeApi/DockerComposeApi.csproj", "DockerComposeApi/"]
+COPY ["src/DockerComposeApi/DockerComposeApi.csproj", "DockerComposeApi/"]
 RUN dotnet restore DockerComposeApi/DockerComposeApi.csproj
 
 COPY . /src
