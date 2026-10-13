@@ -84,14 +84,14 @@ jobs:
       
       - name: Update Container App image
         env:
-          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
+          APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+          IMAGE: ghcr.io/${{ github.event.repository.name }}:${{ github.sha }}
+          # IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
         run: |
           az containerapp update \
-            --name "${{ secrets.CONTAINER_APP_NAME }}" \
-            --resource-group "${{ secrets.RESOURCE_GROUP }}" \
-            --image "${IMAGE}" \
-            --registry-server ghcr.io \
-            --registry-username "${{ github.actor }}" \
-            --registry-password "${{ secrets.GITHUBPASSWORD }}"
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "$IMAGE"
 
 
