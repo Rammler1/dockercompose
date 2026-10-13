@@ -27,15 +27,16 @@
 name: Build and deploy a container to an Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: dockercompose  # set this to the name of your Azure Web App
+  IMAGE_REGISTRY: ghcr.io 
 
 on:
   push:
-    branches: [ "main" ]
+   # branches: [ "dev" ]
   workflow_dispatch:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   build:
@@ -50,7 +51,7 @@ jobs:
       - name: Log in to GitHub container registry
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
-          registry: ghcr.io
+          registry: env.IMAGE_REGISTRY
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUBPASSWORD }}
 
@@ -61,7 +62,7 @@ jobs:
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
           push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.REPO }}:${{ github.sha }}
           file: ./src/Dockerfile
 
   deploy:
@@ -71,16 +72,13 @@ jobs:
     needs: build
     environment:
       name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+
