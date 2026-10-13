@@ -31,7 +31,7 @@ env:
 
 on:
   push:
-   # branches: [ "dev" ]
+    branches: [ "dev" ]
   workflow_dispatch:
 
 permissions:
@@ -76,9 +76,22 @@ jobs:
     steps:
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+        
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Update Container App image
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
+        run: |
+          az containerapp update \
+            --name "${{ secrets.CONTAINER_APP_NAME }}" \
+            --resource-group "${{ secrets.RESOURCE_GROUP }}" \
+            --image "${IMAGE}" \
+            --registry-server ghcr.io \
+            --registry-username "${{ github.actor }}" \
+            --registry-password "${{ secrets.GITHUBPASSWORD }}"
 
 
