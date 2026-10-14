@@ -27,6 +27,7 @@
 name: Build and deploy a container to an Azure Web App
 
 env:
+  REPO: ${{ toLower(github.repository) }}
   IMAGE_REGISTRY: ghcr.io 
 
 on:
@@ -81,7 +82,27 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+          
+      - name: Ensure containerapp extension
+        run: |
+          az extension add --name containerapp --upgrade || az extension update --name containerapp
+
+      - name: Configure GHCR registry for Container App (idempotent)
+        env:
+          APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+          REGISTRY: ${{ env.IMAGE_REGISTRY }}
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUBPASSWORD }}
+        run: |
+          # This sets the registries block on the Container App so the platform can pull private images
+          az containerapp registry set \
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --server "$REGISTRY" \
+            --username "$REGISTRY_USERNAME" \
+            --password "$REGISTRY_PASSWORD"
+            
       - name: Update Container App image
         env:
           APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
