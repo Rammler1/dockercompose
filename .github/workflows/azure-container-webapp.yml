@@ -27,7 +27,7 @@
 name: Build and deploy a container to an Azure Web App
 
 env:
-  REPO: ${{ toLower(github.repository) }}
+  REPO: ${{ github.repository }}
   IMAGE_REGISTRY: ghcr.io 
 
 on:
