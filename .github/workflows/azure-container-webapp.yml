@@ -115,8 +115,9 @@ jobs:
             --resource-group "$RESOURCE_GROUP" \
             --image "$IMAGE"
 
-          az containerapp ingress update \
+          az containerapp ingress enable \
             --name "$APP_NAME" \
             --resource-group "$RESOURCE_GROUP" \
+            --type external \
+            --transport auto \
             --target-port 8080
-
