@@ -9,6 +9,4 @@ RUN dotnet publish src/DockerComposeApi/DockerComposeApi.csproj -c Release -o /a
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS Final
 WORKDIR /app
 COPY --from=Build /app/publish .
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
 ENTRYPOINT ["dotnet", "DockerComposeApi.dll"]
