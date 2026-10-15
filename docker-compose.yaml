@@ -22,10 +22,10 @@ services:
     container_name: csharp_web_api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=TodoDb;User Id=sa;Password=YourStrong@Password123;TrustServerCertificate=True;
     ports:
-      - "8080:8080"
+      - "80:80"
     depends_on:
       - db
     networks:
